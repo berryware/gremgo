@@ -86,6 +86,23 @@ func (c *Client) executeRequest(query string, bindings, rebindings map[string]st
 	return
 }
 
+func (c *Client) executeTraversalRequest(traversal map[string]interface{}) (resp interface{}, err error) {
+	req, id, err := prepareTraversalRequest(traversal)
+	if err != nil {
+		return
+	}
+
+	msg, err := packageRequest(req)
+	if err != nil {
+		log.Println(err)
+		return
+	}
+	c.responseNotifier.Store(id, make(chan int, 1))
+	c.dispatchRequest(msg)
+	resp = c.retrieveResponse(id)
+	return
+}
+
 func (c *Client) authenticate(requestId string) (err error){
 	auth := c.conn.getAuth()
 	req, err := prepareAuthRequest(requestId, auth.username, auth.password)
@@ -124,6 +141,15 @@ func (c *Client) ExecuteFile(path string, bindings, rebindings map[string]string
 	}
 	query := string(d)
 	resp, err = c.executeRequest(query, bindings, rebindings)
+	return
+}
+
+// Execute formats a raw Gremlin query, sends it to Gremlin Server, and returns the result.
+func (c *Client) ExecuteTraversal(traversal map[string]interface{}) (resp interface{}, err error) {
+	if c.conn.isDisposed(){
+		return nil, errors.New("you cannot write on disposed connection")
+	}
+	resp, err = c.executeTraversalRequest(traversal)
 	return
 }
 

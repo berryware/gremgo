@@ -65,6 +65,21 @@ func prepareAuthRequest(requestId string, username string, password string) (req
 	return
 }
 
+// prepareRequest packages a traversal request into the format that Gremlin Server accepts
+func prepareTraversalRequest(traversal map[string]interface{}) (req request, id string, err error) {
+	id = uuid.NewV4().String()
+
+	req.RequestId = id
+	req.Op = "bytecode"
+	req.Processor = "traversal"
+
+	req.Args = make(map[string]interface{})
+	req.Args["gremlin"] = traversal
+	req.Args["aliases"] = map[string]string{"g": "g"}
+
+	return
+}
+
 /////
 
 // formatMessage takes a request type and formats it into being able to be delivered to Gremlin Server
