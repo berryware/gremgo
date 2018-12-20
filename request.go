@@ -66,7 +66,7 @@ func prepareAuthRequest(requestId string, username string, password string) (req
 }
 
 // prepareRequest packages a traversal request into the format that Gremlin Server accepts
-func prepareTraversalRequest(traversal map[string]interface{}) (req request, id string, err error) {
+func prepareTraversalRequest(traversal [][]interface{}) (req request, id string, err error) {
 	id = uuid.NewV4().String()
 
 	req.RequestId = id
