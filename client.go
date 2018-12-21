@@ -86,7 +86,7 @@ func (c *Client) executeRequest(query string, bindings, rebindings map[string]st
 	return
 }
 
-func (c *Client) executeTraversalRequest(traversal [][]interface{}) (resp interface{}, err error) {
+func (c *Client) executeTraversalRequest(traversal map[string]interface{}) (resp interface{}, err error) {
 	req, id, err := prepareTraversalRequest(traversal)
 	if err != nil {
 		return
@@ -145,7 +145,7 @@ func (c *Client) ExecuteFile(path string, bindings, rebindings map[string]string
 }
 
 // Execute formats a raw Gremlin query, sends it to Gremlin Server, and returns the result.
-func (c *Client) ExecuteTraversal(traversal [][]interface{}) (resp interface{}, err error) {
+func (c *Client) ExecuteTraversal(traversal map[string]interface{}) (resp interface{}, err error) {
 	if c.conn.isDisposed(){
 		return nil, errors.New("you cannot write on disposed connection")
 	}

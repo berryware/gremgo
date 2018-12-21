@@ -2,7 +2,7 @@ package gremgo
 
 import (
 	"encoding/json"
-
+  "fmt"
 	"github.com/satori/go.uuid"
 	"encoding/base64"
 )
@@ -66,7 +66,7 @@ func prepareAuthRequest(requestId string, username string, password string) (req
 }
 
 // prepareRequest packages a traversal request into the format that Gremlin Server accepts
-func prepareTraversalRequest(traversal [][]interface{}) (req request, id string, err error) {
+func prepareTraversalRequest(traversal map[string]interface{}) (req request, id string, err error) {
 	id = uuid.NewV4().String()
 
 	req.RequestId = id
@@ -85,11 +85,13 @@ func prepareTraversalRequest(traversal [][]interface{}) (req request, id string,
 // formatMessage takes a request type and formats it into being able to be delivered to Gremlin Server
 func packageRequest(req request) (msg []byte, err error) {
 
+	fmt.Println(req)
 	j, err := json.Marshal(req) // Formats request into byte format
+	fmt.Println(string(j))
 	if err != nil {
 		return
 	}
-	mimeType := []byte("application/vnd.gremlin-v2.0+json")
+	mimeType := []byte("application/vnd.gremlin-v3.0+json")
 	msg = append([]byte{0x21}, mimeType...) //0x21 is the fixed length of mimeType in hex
 	msg = append(msg, j...)
 
